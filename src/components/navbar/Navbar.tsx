@@ -15,7 +15,9 @@ const Navbar = () => {
     };
 
     const handleNavigation = (path: string) => {
-        navigate(path);
+        if (isAuthenticated) {
+            navigate(path);
+        }
         setIsMobileMenuOpen(false);
     };
 

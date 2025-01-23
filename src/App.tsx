@@ -7,6 +7,7 @@ import TaskProvider from "./contexts/TaskContext";
 import DashboardProvider from "./contexts/DashboardContext";
 
 const App = () => {
+ 
   return (
     <>
       <DashboardProvider>

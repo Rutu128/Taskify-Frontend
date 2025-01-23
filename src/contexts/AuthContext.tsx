@@ -1,10 +1,7 @@
-import React, { createContext, useState, useCallback, useEffect } from 'react';
+import React, { createContext, useState, useCallback } from 'react';
 import axios from 'axios';
 import { baseUrl } from '@/utils/Api';
-import { Navigate } from 'react-router-dom';
-
-
-
+import toast from 'react-hot-toast';
 
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -23,21 +20,12 @@ interface AuthState {
 
 interface AuthContextType extends AuthState {
   login: (email: string, password: string) => Promise<boolean>;
-  logout: () => Promise<void>;
+  logout: () => Promise<boolean>;
+  ping: () => Promise<boolean | undefined>;
 }
 
-function getCookie(): boolean {
-  const arrayb = document.cookie.split(";");
-  for (const item of arrayb) {
-    if (item.startsWith("token=")) {
-      return true;
-    }
-  }
-  return false;
-}
 
 const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-
 
   const [authState, setAuthState] = useState<AuthState>({
     user: null,
@@ -46,44 +34,20 @@ const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => 
     isLoading: false,
   });
 
-  useEffect(() => {
-    if (getCookie()) {
-      if (!localStorage.getItem('token') || localStorage.getItem('user')) {
-        setAuthState({
-          user: null,
-          token: null,
-          isAuthenticated: false,
-          isLoading: false,
-        });
-        <Navigate to="/" />
-      }
-      setAuthState({
-        user: JSON.parse(localStorage.getItem('user') as string),
-        token: localStorage.getItem('token'),
-        isAuthenticated: true,
-        isLoading: false,
-      });
-    } else {
-      setAuthState({
-        user: null,
-        token: null,
-        isAuthenticated: false,
-        isLoading: false,
-      });
-      <Navigate to="/" />
-    }
-  }, []);
 
   const login = useCallback(async (email: string, password: string) => {
     try {
-      setAuthState(prev => ({ ...prev, isLoading: true }));
 
-      const response = await axios.post(`${baseUrl}/auth`, {
+      setAuthState(prev => ({ ...prev, isLoading: true }));
+      
+      const response = await axios.post(`${baseUrl}/auth/`, {
         email,
         password,
       }, {
         withCredentials: true,
+        
       });
+      console.log("response", response);
 
       const { token, user } = response.data.data;
 
@@ -96,6 +60,7 @@ const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => 
         isAuthenticated: true,
         isLoading: false,
       });
+      toast.success("Logged in successfully");
       return true;
     } catch (error) {
       setAuthState(prev => ({
@@ -103,24 +68,64 @@ const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => 
         isLoading: false,
         isAuthenticated: false,
       }));
-      throw error;
+      toast.error("Login failed. Please try again");
+      console.log(error);
+      return false;
     }
   }, []);
 
-  const logout = useCallback(async () => {
+  const ping = useCallback(async () => {
     try {
-      await axios.get(`${baseUrl}/auth/logout`, {
+      const response = await axios.get(`${baseUrl}/auth/ping`, {
         withCredentials: true,
       });
-      localStorage.removeItem('token');
-      localStorage.removeItem('user');
+      if (response.data.statusCode === 200) {
+        const user = JSON.parse(localStorage.getItem('user') as string);
+        setAuthState({
+          user,
+          token: localStorage.getItem('token') as string,
+          isAuthenticated: true,
+          isLoading: false,
+        });
+        return true;
+      } else {
+        localStorage.removeItem('token');
+        localStorage.removeItem('user');
+        setAuthState({
+          user: null,
+          token: null,
+          isAuthenticated: false,
+          isLoading: false,
+        });
+        return false;
+      }
+    } catch (error) {
+      console.log('Ping error:', error);
+      // toast.error("Session terminated. Please login again");
+      // <Navigate to="/" />
+    }
+  }, [])
 
-      setAuthState({
-        user: null,
-        token: null,
-        isAuthenticated: false,
-        isLoading: false,
+  const logout = useCallback(async () => {
+    try {
+      const response = await axios.get(`${baseUrl}/auth/logout`, {
+        withCredentials: true,
       });
+      if (response.data.statusCode === 200) {
+
+        localStorage.removeItem('token');
+        localStorage.removeItem('user');
+
+        setAuthState({
+          user: null,
+          token: null,
+          isAuthenticated: false,
+          isLoading: false,
+        });
+        toast.success("Logged out successfully");
+        return true;
+      }
+      return false;
     } catch (error) {
       console.error('Logout error:', error);
       throw error;
@@ -133,6 +138,7 @@ const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => 
         ...authState,
         login,
         logout,
+        ping
       }}
     >
       {children}

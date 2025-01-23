@@ -56,9 +56,17 @@ const calculateTotalHours = (startTime: string, endTime: string): number => {
 };
 
 const formatDateForInput = (dateStr: string): string => {
-    if (!dateStr) return '';
     const date = new Date(dateStr);
-    return date.toISOString().slice(0, 16);
+
+    // Get the components of the date in the required format
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0'); // Months are zero-indexed
+    const day = String(date.getDate()).padStart(2, '0');
+    const hours = String(date.getHours()).padStart(2, '0');
+    const minutes = String(date.getMinutes()).padStart(2, '0');
+
+    // Combine components into the "yyyy-MM-ddTHH:mm" format
+    return `${year}-${month}-${day}T${hours}:${minutes}`;
 };
 
 const TaskDialog: React.FC<TaskDialogProps> = ({ isOpen, onClose, task, mode }) => {
@@ -179,15 +187,15 @@ const TaskDialog: React.FC<TaskDialogProps> = ({ isOpen, onClose, task, mode }) 
                     </div>
 
                     <div className="flex justify-end space-x-3 pt-4">
-                        <Button 
-                            variant="outline" 
-                            type="button" 
+                        <Button
+                            variant="outline"
+                            type="button"
                             onClick={onClose}
                             className="text-sm sm:text-base"
                         >
                             Cancel
                         </Button>
-                        <Button 
+                        <Button
                             type="submit"
                             className="text-sm sm:text-base"
                         >

@@ -1,6 +1,7 @@
 import React, { createContext, useState, useCallback } from 'react';
 import axios from 'axios';
 import { baseUrl } from '@/utils/Api';
+import toast from 'react-hot-toast';
 
 interface Task {
     _id: string;
@@ -80,12 +81,15 @@ export const TaskProvider: React.FC<{ children: React.ReactNode }> = ({ children
             if (response.status === 200) {
                 // Fetch all tasks to ensure we have the latest data
                 await fetchTasks();
+                toast.success("Task added!");
                 return true;
             }
+            toast.error("Failed to add task!");
             return false;
         } catch (err) {
             console.log(err);
             setError(err instanceof Error ? err.message : 'Failed to add task');
+            toast.error("Failed to add task!");
             return false;
         } finally {
             setLoading(false);
@@ -103,11 +107,14 @@ export const TaskProvider: React.FC<{ children: React.ReactNode }> = ({ children
             if (data.statusCode === 200) {
                 // Fetch all tasks to ensure we have the latest data
                 await fetchTasks();
+                toast.success("Task updated!");
                 return true;
             }
+            toast.error("Failed to update task!");
             return false;
         } catch (err) {
             setError(err instanceof Error ? err.message : 'Failed to update task');
+            toast.error("Failed to update task!");
             return false;
         } finally {
             setLoading(false);
@@ -122,11 +129,14 @@ export const TaskProvider: React.FC<{ children: React.ReactNode }> = ({ children
             if (response.status === 200) {
                 // Fetch all tasks to ensure we have the latest data
                 await fetchTasks();
+                toast.success("Task deleted!");
                 return true;
             }
+            toast.error("Failed to delete task!");
             return false;
         } catch (err) {
             setError(err instanceof Error ? err.message : 'Failed to delete task');
+            toast.error("Failed to delete task!");
             return false;
         } finally {
             setLoading(false);
