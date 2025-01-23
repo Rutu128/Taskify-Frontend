@@ -1,1 +1,1 @@
-export const baseUrl = "https://taskify-backend-1bpa.onrender.com"
+export const baseUrl = "http://localhost:3000"

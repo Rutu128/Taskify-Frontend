@@ -9,11 +9,11 @@ const HomePage = () => {
     navigate("/dashboard");
   }
   return (
-    <div className="flex min-h-svh w-full items-center justify-center p-6 md:p-10">
-      <div className="w-full max-w-sm">
-        <LoginForm />
+      <div className="flex max-h-screen w-full items-center justify-center p-6 md:p-10">
+        <div className="w-full max-w-sm mt-20">
+          <LoginForm />
+        </div>
       </div>
-    </div>
   )
 }
 
