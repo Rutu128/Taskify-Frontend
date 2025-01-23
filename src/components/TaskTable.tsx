@@ -1,4 +1,3 @@
-import type React from "react"
 import { useState, useEffect, useMemo } from "react"
 import { useTask } from "@/hooks/useTask"
 import { usePageSize } from "@/hooks/usePageSize"
