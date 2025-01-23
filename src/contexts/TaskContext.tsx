@@ -33,7 +33,7 @@ interface TaskContextType {
     clearError: () => void;
 }
 const TaskContext = createContext<TaskContextType | null>(null);
-export const TaskProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+export const TaskProvider = ({ children }: { children: React.ReactNode }) => {
     const [tasks, setTasks] = useState<Task[]>([]);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
@@ -41,16 +41,16 @@ export const TaskProvider: React.FC<{ children: React.ReactNode }> = ({ children
         total: 0,
         totalPages: 0,
         currentPage: 1,
-        limit: 5 // Set default limit to 5
+        limit: 5
     });
 
-    const fetchTasks = useCallback(async (page = 1, limit = 5, filters: unknown = {}) => {
+    const fetchTasks = useCallback(async (page = 1, limit = 5) => {
         try {
             setLoading(true);
             const queryParams = new URLSearchParams({
                 page: page.toString(),
                 limit: limit.toString(),
-                ...(typeof filters === 'object' && filters !== null ? filters : {})
+
             });
 
             const { data } = await axios.get(
@@ -79,7 +79,6 @@ export const TaskProvider: React.FC<{ children: React.ReactNode }> = ({ children
             });
 
             if (response.status === 200) {
-                // Fetch all tasks to ensure we have the latest data
                 await fetchTasks();
                 toast.success("Task added!");
                 return true;
@@ -105,7 +104,6 @@ export const TaskProvider: React.FC<{ children: React.ReactNode }> = ({ children
             );
 
             if (data.statusCode === 200) {
-                // Fetch all tasks to ensure we have the latest data
                 await fetchTasks();
                 toast.success("Task updated!");
                 return true;
@@ -127,7 +125,6 @@ export const TaskProvider: React.FC<{ children: React.ReactNode }> = ({ children
             const response = await axios.delete(`${baseUrl}/task/delete/${taskId}`, { withCredentials: true });
 
             if (response.status === 200) {
-                // Fetch all tasks to ensure we have the latest data
                 await fetchTasks();
                 toast.success("Task deleted!");
                 return true;

@@ -25,7 +25,6 @@ const Navbar = () => {
         <nav className="fixed top-0 left-0 right-0 border-b bg-white z-50">
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 <div className="flex items-center justify-between h-16">
-                    {/* Logo/Brand */}
                     <div className="flex-shrink-0">
                         <button
                             onClick={() => handleNavigation("/dashboard")}
@@ -35,7 +34,6 @@ const Navbar = () => {
                         </button>
                     </div>
 
-                    {/* Desktop Navigation */}
                     <div className="hidden md:flex md:items-center md:space-x-4">
                         <Button
                             variant="ghost"
@@ -84,7 +82,6 @@ const Navbar = () => {
                 </div>
             </div>
 
-            {/* Mobile Navigation Menu */}
             {isMobileMenuOpen && (
                 <div className="md:hidden border-t bg-white">
                     <div className="space-y-1 px-4 pb-3 pt-2">

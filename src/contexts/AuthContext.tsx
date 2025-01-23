@@ -25,7 +25,7 @@ interface AuthContextType extends AuthState {
 }
 
 
-const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 
   const [authState, setAuthState] = useState<AuthState>({
     user: null,
@@ -39,13 +39,13 @@ const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => 
     try {
 
       setAuthState(prev => ({ ...prev, isLoading: true }));
-      
+
       const response = await axios.post(`${baseUrl}/auth/`, {
         email,
         password,
       }, {
         withCredentials: true,
-        
+
       });
       console.log("response", response);
 
@@ -101,8 +101,7 @@ const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => 
       }
     } catch (error) {
       console.log('Ping error:', error);
-      // toast.error("Session terminated. Please login again");
-      // <Navigate to="/" />
+   
     }
   }, [])
 
